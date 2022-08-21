@@ -4,6 +4,5 @@ services:
     build: .
     ports:
       - "9001:9001"
-    # volumes: need to add the sqlite file as a volume
-volumes:
-  logvolume01: {}
+    volumes:
+      - ./systems.sqlitedb:/app/systems.sqlitedb
