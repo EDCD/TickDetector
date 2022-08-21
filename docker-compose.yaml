@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  tick_detector:
+    build: .
+    ports:
+      - "9001:9001"
+    volumes:
+      - ./systems.sqlitedb:/app/systems.sqlitedb
