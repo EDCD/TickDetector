@@ -17,4 +17,3 @@ RUN npm ci \
 ENV PATH=/app/node_modules/.bin:$PATH
 COPY --chown=node:node . .
 ENV NODE_ENV=production
-CMD ["node", "tick.js"]

@@ -1,8 +1,19 @@
 version: "3.9"
 services:
-  tick_detector:
+  tick:
     build: .
     ports:
       - "9001:9001"
     volumes:
       - ./systems.sqlitedb:/app/systems.sqlitedb
+    command: node tick.js
+  eddn:
+    build: .
+    volumes:
+      - ./systems.sqlitedb:/app/systems.sqlitedb
+    command: node EDDN.js
+  detector:
+    build: .
+    volumes:
+      - ./systems.sqlitedb:/app/systems.sqlitedb
+    command: node detector.js
