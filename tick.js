@@ -42,7 +42,7 @@ function config() {
 function configAPI() {
 	app.get('/', (req, res) => res.sendFile(path.join(__dirname,'tick.html')));
 	app.get('/allTicks', (req, res) => res.sendFile(path.join(__dirname,'allTicks.html')));
-	app.get('/license', (req, res) => res.sendFile(path.join(__dirname,'license.txt')));
+	app.get('/license', (req, res) => res.sendFile(path.join(__dirname,'LICENSE')));
 	app.use('/api', router);
 	app.listen(port);
 
