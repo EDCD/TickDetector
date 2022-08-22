@@ -9,21 +9,24 @@ const Database = require('better-sqlite3');
 const moment = require('moment');
 const path = require('path');
 const clustering = require('density-clustering');
+
 const io = require('socket.io')(
 	31173,
 	{
 		pingTimeout: 30000,
 		allowEIO3: true,
 		cors: {
-			origin: "https://tick.edcd.io",
+			origin: true,
 			methods: ["GET", "OPTIONS"]
 		}
 	}
 );
+
 const express = require('express');
 const cors = require('cors');
 const app = express();
 const router = express.Router();
+
 const port = 9001;
 const db = new Database('systems.sqlitedb');
 const json2html = require('node-json2html');
@@ -41,7 +44,12 @@ function config() {
 	configAPI();
 
 //Socket.io
-	io.on('connection', function(socket){socket.send(getLastTick());console.log(`New connection: ${moment().format()} - ${socket.client.conn.remoteAddress}`);});
+	io.on('connection',
+		function(socket){
+			socket.send(getLastTick());
+			console.log(`New connection: ${moment().format()} - ${socket.client.conn.remoteAddress}`);
+		}
+	);
 
 //Periodic
 	let freshness = 14400;
@@ -56,8 +64,8 @@ function configAPI() {
 	// Ref: <http://johnzhang.io/options-request-in-express>
 	app.options('/*', function(req, res, next) {
 		res.header('Access-Control-Allow-Origin', '*');
-		res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-		res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+		res.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
+		res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, X-Requested-With');
 		res.send(200);
 	}
 	)
