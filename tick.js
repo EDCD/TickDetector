@@ -9,8 +9,19 @@ const Database = require('better-sqlite3');
 const moment = require('moment');
 const path = require('path');
 const clustering = require('density-clustering');
-const io = require('socket.io')(31173, {pingTimeout: 30000, allowEIO3: true});
+const io = require('socket.io')(
+	31173,
+	{
+		pingTimeout: 30000,
+		allowEIO3: true,
+		cors: {
+			origin: "https://tick.edcd.io",
+			methods: ["GET", "OPTIONS"]
+		}
+	}
+);
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const router = express.Router();
 const port = 9001;
@@ -21,6 +32,7 @@ const util = require('util');
 
 var lock = false;
 
+app.use(cors())
 config();
 console.log('Tick Publisher started');
 
@@ -40,6 +52,16 @@ function config() {
 }
 
 function configAPI() {
+	// Handle OPTIONS for Cors queries
+	// Ref: <http://johnzhang.io/options-request-in-express>
+	app.options('/*', function(req, res, next) {
+		res.header('Access-Control-Allow-Origin', '*');
+		res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+		res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+		res.send(200);
+	}
+	)
+
 	app.get('/', (req, res) => res.sendFile(path.join(__dirname,'tick.html')));
 	app.get('/allTicks', (req, res) => res.sendFile(path.join(__dirname,'allTicks.html')));
 	app.get('/license', (req, res) => res.sendFile(path.join(__dirname,'LICENSE')));
