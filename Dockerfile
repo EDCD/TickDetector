@@ -5,11 +5,13 @@ WORKDIR /app
 RUN chown -R node:node /app
 COPY --chown=node:node package*.json ./
 ENV NODE_ENV=development
+# ENV DEBUG="socket* express*"
 RUN apt-get update -qq && apt-get install -qy \
     ca-certificates \
     bzip2 \
     curl \
     libfontconfig \
+    strace \
     --no-install-recommends
 USER node
 RUN npm config list
