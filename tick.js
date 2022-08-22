@@ -50,7 +50,7 @@ function config() {
 //Socket.io
 	io.on('connection', (socket) => {
 		console.log(`New connection: ${moment().format()} - ${socket.client.conn.remoteAddress}`);
-		io.emit('last tick', getLastTick())
+		socket.send(getLastTick());
 	}
 	);
 
