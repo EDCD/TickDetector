@@ -4,7 +4,6 @@ services:
     build: .
     ports:
       - "9001:9001"
-      - "31173:31173"
     volumes:
       - ./systems.sqlitedb:/app/systems.sqlitedb
     command: node tick.js
