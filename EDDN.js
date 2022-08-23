@@ -16,6 +16,34 @@ const db = new Database('systems.sqlitedb');
 
 const util = require('util');
 
+/* Handle signals for clean shutdowns
+ * List of signals
+ */
+var shutdown_signals = {
+	'SIGHUP': 1,
+	'SIGINT': 2,
+	'SIGTERM': 15
+};
+
+const shutdown = (signal, value) => {
+	console.log("Shutting down...");
+
+	// Perform necessary cleanup
+	sock.close();
+	db.close();
+
+	console.log("Exiting.");
+	process.exit(128 + value);
+};
+
+// Create a listener for each signal
+Object.keys(shutdown_signals).forEach((signal) => {
+	process.on(signal, () => {
+		console.log(`process received "shutdown" ${signal} signal`);
+		shutdown(signal, shutdown_signals[signal]);
+	});
+});
+
 var msgStats = ['1', '5', '10', '15', '30', '60', 
 					'120', '180', '240', '300', '360',
 					'420', '480', '540', '600'];
