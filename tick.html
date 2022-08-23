@@ -3,7 +3,7 @@
 <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
 <script>
-	const socket = io('https://tick.edcd.io');
+	const socket = io();
 	socket.on('message', (data)=>{document.getElementById('tick').innerHTML = data});
 
 	socket.on('tick', (data)=>alert(`New tick: ${data}`));
