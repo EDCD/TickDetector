@@ -34,11 +34,41 @@ const json2html = require('node-json2html');
 
 const util = require('util');
 
+/* Handle signals for clean shutdowns
+ * List of signals
+ */
+var shutdown_signals = {
+	'SIGHUP': 1,
+	'SIGINT': 2,
+	'SIGTERM': 15
+};
+
+const shutdown = (signal, value) => {
+	console.log("Shutting down...");
+
+	// Perform necessary cleanup
+	http.close();
+	lock = true;
+	clearInterval(interval_calculateTicks);
+	db.close();
+
+	console.log("Exiting.");
+	process.exit(128 + value);
+};
+
+// Create a listener for each signal
+Object.keys(shutdown_signals).forEach((signal) => {
+	process.on(signal, () => {
+		console.log(`process received "shutdown" ${signal} signal`);
+		shutdown(signal, shutdown_signals[signal]);
+	});
+});
+
 var lock = false;
 
 config();
 http.listen(port, () => {
-	console.log("Socket.IO server running at http://localhost:${port}/");
+	console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
 
 console.log('Tick Publisher started');
@@ -59,7 +89,7 @@ function config() {
 	let threshold = 5;
 	let delta = 7500;
 	calculateTicks(freshness, threshold, delta);
-	setInterval(calculateTicks, 60000, freshness, threshold, delta);
+	interval_calculateTicks = setInterval(calculateTicks, 60000, freshness, threshold, delta);
 }
 
 function configAPI() {
