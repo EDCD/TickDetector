@@ -9,10 +9,25 @@ const Database = require('better-sqlite3');
 const moment = require('moment');
 const path = require('path');
 const clustering = require('density-clustering');
-const io = require('socket.io')(31173, {pingTimeout: 30000, allowEIO3: true});
+
 const express = require('express');
 const app = express();
+const http = require('http').Server(app);
+
+const cors = require('cors');
+app.use(cors())
+
 const router = express.Router();
+
+const io = require('socket.io')(http, {
+	cors: {
+		origin: true,
+		methods: ["GET", "POST", "OPTIONS"],
+		transports: ["websocket", "polling"]
+	},
+	allowEIO3: true
+});
+
 const port = 9001;
 const db = new Database('systems.sqlitedb');
 const json2html = require('node-json2html');
@@ -22,6 +37,10 @@ const util = require('util');
 var lock = false;
 
 config();
+http.listen(port, () => {
+	console.log("Socket.IO server running at http://localhost:${port}/");
+});
+
 console.log('Tick Publisher started');
 
 function config() {
@@ -29,7 +48,11 @@ function config() {
 	configAPI();
 
 //Socket.io
-	io.on('connection', function(socket){socket.send(getLastTick());console.log(`New connection: ${moment().format()} - ${socket.client.conn.remoteAddress}`);});
+	io.on('connection', (socket) => {
+		console.log(`New connection: ${moment().format()} - ${socket.client.conn.remoteAddress}`);
+		socket.send(getLastTick());
+	}
+	);
 
 //Periodic
 	let freshness = 14400;
@@ -40,11 +63,20 @@ function config() {
 }
 
 function configAPI() {
+	// Handle OPTIONS for Cors queries
+	// Ref: <http://johnzhang.io/options-request-in-express>
+	app.options('/*', function(req, res, next) {
+		res.header('Access-Control-Allow-Origin', '*');
+		res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+		res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, X-Requested-With');
+		res.send(200);
+	}
+	)
+
 	app.get('/', (req, res) => res.sendFile(path.join(__dirname,'tick.html')));
 	app.get('/allTicks', (req, res) => res.sendFile(path.join(__dirname,'allTicks.html')));
 	app.get('/license', (req, res) => res.sendFile(path.join(__dirname,'LICENSE')));
 	app.use('/api', router);
-	app.listen(port);
 
 	router.get('/testTicks', (req, res) => {
 		let freshness = req.query['freshness']?req.query['freshness']:7200;

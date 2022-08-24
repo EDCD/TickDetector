@@ -1,10 +1,11 @@
 <html>
 <head><title>Elite Tick Detector</title></head>
 <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
 <script>
-	const socket = io('http://tick.edcd.io:31173');
+	const socket = io('https://tick.edcd.io');
 	socket.on('message', (data)=>{document.getElementById('tick').innerHTML = data});
+
 	socket.on('tick', (data)=>alert(`New tick: ${data}`));
 </script>
 <div id="tick">
