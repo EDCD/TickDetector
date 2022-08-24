@@ -5,15 +5,15 @@ services:
     ports:
       - "9001:9001"
     volumes:
-      - ./systems.sqlitedb:/app/systems.sqlitedb
+      - ./database/:/app/database:rw
     command: node tick.js
   eddn:
     build: .
     volumes:
-      - ./systems.sqlitedb:/app/systems.sqlitedb
+      - ./database/:/app/database:rw
     command: node EDDN.js
   detector:
     build: .
     volumes:
-      - ./systems.sqlitedb:/app/systems.sqlitedb
+      - ./database/:/app/database:rw
     command: node detector.js

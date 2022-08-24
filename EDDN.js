@@ -12,7 +12,7 @@ const sock = zmq.socket('sub');
 const request = require('request');
 const moment = require('moment');
 const path = require('path');
-const db = new Database('systems.sqlitedb');
+const db = new Database('database/systems.db');
 
 const util = require('util');
 
