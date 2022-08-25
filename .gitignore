@@ -1,2 +1,2 @@
-node_modules
-systems.sqlitedb
+node_modules/
+database/

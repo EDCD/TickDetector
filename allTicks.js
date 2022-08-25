@@ -3,7 +3,7 @@ const Database = require('better-sqlite3');
 const moment = require('moment');
 const path = require('path');
 const clustering = require('density-clustering');
-const db = new Database('systems.sqlitedb');
+const db = new Database('database/systems.db');
 
 const util = require('util');
 

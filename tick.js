@@ -29,7 +29,7 @@ const io = require('socket.io')(http, {
 });
 
 const port = 9001;
-const db = new Database('systems.sqlitedb');
+const db = new Database('database/systems.db');
 const json2html = require('node-json2html');
 
 const util = require('util');
