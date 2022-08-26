@@ -53,12 +53,15 @@ To set up the APT repository consult the
 ### Starting and stopping the containers
 
 After a build you will want:
+
     docker compose up -d
 
 To stop them:
+
     docker compose stop
 
 and then to start them again, without a rebuild:
+
     docker compose start
 
 Note that you can stop/start individual containers if desired.
