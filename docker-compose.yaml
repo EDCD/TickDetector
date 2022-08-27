@@ -7,13 +7,22 @@ services:
     volumes:
       - ./database/:/app/database:rw
     command: node tick.js
+    # Without this the container stops if containerd stops, and doesn't
+    # start when containerd is started again.
+    restart: unless-stopped
   eddn:
     build: .
     volumes:
       - ./database/:/app/database:rw
     command: node EDDN.js
+    # Without this the container stops if containerd stops, and doesn't
+    # start when containerd is started again.
+    restart: unless-stopped
   detector:
     build: .
     volumes:
       - ./database/:/app/database:rw
     command: node detector.js
+    # Without this the container stops if containerd stops, and doesn't
+    # start when containerd is started again.
+    restart: unless-stopped
