@@ -131,8 +131,12 @@ Get the latest tick time as a single JSON string.
 
 * **URL Params**: None
 
-* **Success Response:**: `200 OK`
-  **Example Content:** `"2022-10-10T17:04:17+00:00"`
+* **Success Response**: `200 OK`
+  **Example Content**: `"2022-10-10T17:04:17+00:00"`
+
+* **Sample Call**:
+
+  `curl https://<domain>/api/tick`
 
 * **Notes**: The format of the timestamp in the response is ISO 8601 date/time, with numeric timezone suffix which is always UTC (`+00:00`).
 
@@ -146,17 +150,17 @@ Get a range of tick times between a given start and end date as a JSON formatted
 
 * **URL Params**:
 
-  `start`: `yyyy-mm-dd` - default value: `2014-12-16`
-  `end`: `yyyy-mm-dd` - default value: _Today's date_
+  * `start`: `yyyy-mm-dd` - default value: `2014-12-16`
+  * `end`: `yyyy-mm-dd` - default value: _Today's date_
 
 * **Success Response**: `200 OK`
-  **Content Example:** `[{"TIME":"2022-10-01T16:50:46+00:00"},{"TIME":"2022-10-02T17:06:26+00:00"},{"TIME":"2022-10-03T16:59:29+00:00"},{"TIME":"2022-10-04T17:01:14+00:00"}]`
+  **Example Content**: `[{"TIME":"2022-10-01T16:50:46+00:00"},{"TIME":"2022-10-02T17:06:26+00:00"},{"TIME":"2022-10-03T16:59:29+00:00"},{"TIME":"2022-10-04T17:01:14+00:00"}]`
 
-* **Sample Call:**
+* **Sample Call**:
 
   `curl https://<domain>/api/ticks?start=2022-10-01&end=2022-10-03`
 
-* **Notes:**
+* **Notes**:
 
   The response JSON is a list of objects. Each object contains a single key, `TIME` and the value is a timestamp in ISO 8601 format, with numeric timezone suffix which is always UTC (`+00:00`).
 
