@@ -58,17 +58,17 @@ the `TICK` table.
 **This is also** responsible for serving data about ticks to interested
 parties:
 
-1. It provides the https://tick.edcd.io/ web page, which will display the
-  latest tick known and alert if a new tick is detected.
-1. It provides an API for either retrieving all known ticks, or displaying
-  them in a web page.  Interested parties can either utilise this API or
-  simply connect directly to the [WebSocket](#web-socket]).
+1. It provides a [Web Socket API](#web-socket-api) for direct connections.
+1. It provides a simple web page, in turn using the Web Socket API, to display the latest tick and alert if a new tick is detected.
+1. It provides an [HTTP API](#http-api) for fetching information about the latest tick and previous ticks, with simple filtering.
 
-#### Web Socket
+## API Reference
+
+### Web Socket API
 As part of providing the main web page `tick.js` provides a Web Socket
 which will receive a `'message'` when there is a new tick.
 
-This socket is provided on the standard HTTP/HTTPS port, using whichever
+This socket is provided on the standard HTTP/HTTPS port, using whichever URI
 the page `tick.html` page was loaded on.  As such it is necessary for the
 WebSocket to be passed through any reverse proxy you have in front of the
 service.
@@ -118,3 +118,54 @@ You *can* instead adjust `tick.html` and `tick.js` to run the WebSocket on
 a separate port, but then you'll also need to adjust both `Dockerfile` and
 `docker-compose.yml` to expose that extra port, along with possibly needing
 to allow that extra port through any firewall you have.
+
+### HTTP API
+
+#### tick
+
+Get the latest tick time as a single JSON string.
+
+* **URL**: `/api/tick`
+
+* **Method**: `GET`
+
+* **URL Params**: None
+
+* **Success Response:**: `200 OK`
+  **Example Content:** `"2022-10-10T17:04:17+00:00"`
+
+* **Notes**: The format of the timestamp in the response is ISO 8601 date/time, with numeric timezone suffix which is always UTC (`+00:00`).
+
+#### ticks
+
+Get a range of tick times between a given start and end date as a JSON formatted array of objects.
+
+* **URL**: `/api/ticks`
+
+* **Method**: `GET`
+
+* **URL Params**:
+
+  `start`: `yyyy-mm-dd` - default value: `2014-12-16`
+  `end`: `yyyy-mm-dd` - default value: _Today's date_
+
+* **Success Response**: `200 OK`
+  **Content Example:** `[{"TIME":"2022-10-01T16:50:46+00:00"},{"TIME":"2022-10-02T17:06:26+00:00"},{"TIME":"2022-10-03T16:59:29+00:00"},{"TIME":"2022-10-04T17:01:14+00:00"}]`
+
+* **Sample Call:**
+
+  `curl https://<domain>/api/ticks?start=2022-10-01&end=2022-10-03`
+
+* **Notes:**
+
+  The response JSON is a list of objects. Each object contains a single key, `TIME` and the value is a timestamp in ISO 8601 format, with numeric timezone suffix which is always UTC (`+00:00`).
+
+
+## Hosted Service
+
+The TickDetector is also provided by the EDCD project as a hosted service for public consumption on the tick.edcd.io domain:
+
+* https://tick.edcd.io/ - Simple web page showing latest tick, and using the web socket to alert to new ticks.
+* https://tick.edcd.io/ - Web Socket for live event-based connection.
+* https://tick.edcd.io/api/ - HTTP API
+
