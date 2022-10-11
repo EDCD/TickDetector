@@ -62,20 +62,9 @@ parties:
 1. It provides a simple web page, in turn using the Web Socket API, to display the latest tick and alert if a new tick is detected.
 1. It provides an [HTTP API](#http-api) for fetching information about the latest tick and previous ticks, with simple filtering.
 
-## API Reference
+It is necessary for the WebSocket to be passed through any reverse proxy you have in front of the service.
 
-### Web Socket API
-As part of providing the main web page `tick.js` provides a Web Socket
-which will receive a `'message'` when there is a new tick.
-
-This socket is provided on the standard HTTP/HTTPS port, using whichever URI
-the page `tick.html` page was loaded on.  As such it is necessary for the
-WebSocket to be passed through any reverse proxy you have in front of the
-service.
-
-For Apache2 you will need the `rewrite` and `proxy_wstunnel` modules
-loaded (along with any dependencies, i.e. `proxy`, `proxy_http`) and then
-something like:
+For Apache2 you will need the `rewrite` and `proxy_wstunnel` modules loaded (along with any dependencies, i.e. `proxy`, `proxy_http`) and then something like:
 
 ```apache2
         <IfModule mod_proxy.c>
@@ -118,6 +107,15 @@ You *can* instead adjust `tick.html` and `tick.js` to run the WebSocket on
 a separate port, but then you'll also need to adjust both `Dockerfile` and
 `docker-compose.yml` to expose that extra port, along with possibly needing
 to allow that extra port through any firewall you have.
+## API Reference
+
+### Web Socket API
+As part of providing the main web page `tick.js` provides a Web Socket
+which will receive a `'message'` when there is a new tick.
+
+This socket is provided on the standard HTTP/HTTPS port, using whichever URI
+the page `tick.html` page was loaded on.
+
 
 ### HTTP API
 
