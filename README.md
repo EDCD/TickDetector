@@ -58,8 +58,8 @@ the `TICK` table.
 **This is also** responsible for serving data about ticks to interested
 parties:
 
-1. It provides a [Web Socket API](#web-socket-api) for direct connections.
-1. It provides a simple web page, in turn using the Web Socket API, to display the latest tick and alert if a new tick is detected.
+1. It provides a [WebSocket API](#web-socket-api) for direct connections.
+1. It provides a simple web page, in turn using the WebSocket API, to display the latest tick and alert if a new tick is detected.
 1. It provides an [HTTP API](#http-api) for fetching information about the latest tick and previous ticks, with simple filtering.
 
 It is necessary for the WebSocket to be passed through any reverse proxy you have in front of the service.
@@ -98,7 +98,7 @@ For Apache2 you will need the `rewrite` and `proxy_wstunnel` modules loaded (alo
         </IfModule>
 
 ```
-The `/socket.io` path comes from the Web Socket itself.
+The `/socket.io` path comes from the WebSocket itself.
 
 If you're using nginx then consult
 [nginx websocket documentation](https://nginx.org/en/docs/http/websocket.html).
@@ -109,13 +109,37 @@ a separate port, but then you'll also need to adjust both `Dockerfile` and
 to allow that extra port through any firewall you have.
 ## API Reference
 
-### Web Socket API
-As part of providing the main web page `tick.js` provides a Web Socket
-which will receive a `'message'` when there is a new tick.
+### WebSocket API
+As part of providing the main web page `tick.js` provides a WebSocket
+which will receive both an additional `'message'` when there is a new tick,
+and also a supplementary `'tick'`.  The reasons for the latter relate to
+how the `tick.html` javascript is coded.
 
-This socket is provided on the standard HTTP/HTTPS port, using whichever URI
-the page `tick.html` page was loaded on.
+#### WebSocket connection
+The WebSocket is provisioned on the same TCP port as the HTTP(S)
+endpoints.  There is no separate port for it.  As such whatever code is
+used to connect will have to first connect via HTTP(S) and then issue
+the necessary 'Upgrade' request to change it to the WebSocket protocol.
 
+See [Wikipedia:WebSocket#Protocol handshake](https://en.wikipedia.org/wiki/WebSocket#Protocol_handshake)
+for further details.
+
+Whatever library/module you use to invoke the WebSocket connection
+*should* be happy if you just tell it to connect to the 
+main HTTP(S) URL.
+
+
+#### WebSocket messages
+
+Upon connecting to the WebSocket you should receive a `'message'`
+containing a string representation of when the latest known tick was.
+This will be in ISO8601 form, e.g. `2022-10-11T17:10:13+00:00`.
+
+When a new tick is detected you will receive *two* messages:
+
+1. `'message'` - with the *new* tick date/time.
+2. `'tick'` - the exact same data.  It's a separate message so as to
+   simplify how the `tick.html` web page works.
 
 ### HTTP API
 
@@ -165,9 +189,14 @@ Get a range of tick times between a given start and end date as a JSON formatted
 
 ## Hosted Service
 
-The TickDetector is also provided by the EDCD project as a hosted service for public consumption on the tick.edcd.io domain:
+The TickDetector is also provided by the EDCD project as a hosted service
+or public consumption on the hostname `tick.edcd.io`:
 
-* https://tick.edcd.io/ - Simple web page showing latest tick, and using the web socket to alert to new ticks.
-* https://tick.edcd.io/ - Web Socket for live event-based connection.
-* https://tick.edcd.io/api/ - HTTP API
+* Web page for browser use - `https://tick.edcd.io/` .  This utilises the
+  [WebSocket](#websocket-api), displaying the time of the latest known tick
+  upon page load.  When notified of a new tick via that WebSocket it
+  will popup an alert and update the web page content.
+* [WebSocket](#websocket-api) - Also available via `https://tick.edcd.io`,
+  but see the notes about upgrading from HTTPS to the WebSocket protocol.
+* The [HTTP API](#http-api) under `https://tick.edcd.io/api/`.
 
