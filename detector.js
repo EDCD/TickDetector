@@ -45,8 +45,7 @@ Object.keys(shutdown_signals).forEach((signal) => {
 	});
 });
 
-const thanks = ['Garud',
-									'Lyrae Cursorius']
+const thanks = ['Garud', 'Lyrae Cursorius', 'Phelbore']
 
 config();
 console.log('EDDN Processor (detector) started');
@@ -80,7 +79,10 @@ function getEntries() {
 
 function parseEntry(entry) {
 	timer = Date.now();
-  if(entry.$schemaRef == 'https://eddn.edcd.io/schemas/journal/1') {
+	if (parseFloat(entry.header.gameversion) < 4) {
+		return
+	}
+  	if(entry.$schemaRef == 'https://eddn.edcd.io/schemas/journal/1') {
 		let systemID = entry.message.SystemAddress;
 		let systemName = entry.message.StarSystem;
 		let systemX = entry.message.StarPos[0];
@@ -108,10 +110,10 @@ function setInfluence(systemID, faction, influence, time) {
 	let getInfluenceSql = `SELECT ROWID, SYSTEM, FACTION, INFLUENCE, FIRST_SEEN, LAST_SEEN 
 		FROM INFLUENCE WHERE SYSTEM = ? AND FACTION = ? AND INFLUENCE = ? 
 		ORDER BY FIRST_SEEN DESC LIMIT 7`;
-	
+
 	let setInfluenceSql = `INSERT INTO INFLUENCE(SYSTEM, FACTION, INFLUENCE, FIRST_SEEN, LAST_SEEN, COUNT) 
 		VALUES(?, ?, ?, ?, ?, 1)`;
-	
+
 	let updateInfluenceSql = `UPDATE INFLUENCE SET FIRST_SEEN = ?, LAST_SEEN = ?, COUNT = COUNT +1, DELTA = null WHERE ROWID = ?`;
 
 	let influences = db.prepare(getInfluenceSql).all(systemID, faction, influence);
@@ -150,7 +152,7 @@ function updateDelta(systemID, faction) {
 
 function addSystem(systemID, systemName, systemX, systemY, systemZ) {
 	let sql = `SELECT ID FROM SYSTEMS WHERE ID=? AND NAME=?`;
-	
+
 	let result = db.prepare(sql).get(systemID, systemName);
 	if(!(result && result.ID)) {
 		let insertSql = `INSERT INTO SYSTEMS (ID, NAME, X, Y, Z) VALUES(?, ?, ?, ?, ?)`;
