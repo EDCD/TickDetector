@@ -11,6 +11,14 @@
  * socket in this case has the socket.io protocol on top of that.  Thus
  * a bare WebSocket connection **will not work**.
  *
+ * When it works output should be like:
+ *
+ * 	[message]: 2022-12-18T13:20:50+00:00
+ *
+ * the datetimestamp is that of the last detected tick.  If you keep it
+ * running then you should get an additional message when the next tick
+ * is detected.
+ *
  */
 
 /*
