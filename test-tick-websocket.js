@@ -37,7 +37,7 @@ if (process.argv.length != 3) {
 }
 url = process.argv[2]
 
-socket = io(process.argv[2])
+socket = io(url)
 
 socket.on('message', (data) => {
 	console.log(`[message]: ${data}`);
