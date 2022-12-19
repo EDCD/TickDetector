@@ -37,6 +37,7 @@ if (process.argv.length != 3) {
 }
 url = process.argv[2]
 
+console.log(`Attempting to connect to: ${url}`)
 socket = io(url)
 
 socket.on('message', (data) => {
