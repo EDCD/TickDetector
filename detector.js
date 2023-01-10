@@ -7,7 +7,6 @@
 
 const Database = require('better-sqlite3');
 const zlib = require('zlib');
-const request = require('request');
 const moment = require('moment');
 const path = require('path');
 const db = new Database('database/systems.db');
