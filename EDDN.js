@@ -9,7 +9,6 @@ const Database = require('better-sqlite3');
 const zlib = require('zlib');
 const zmq = require('zeromq');
 const sock = zmq.socket('sub');
-const request = require('request');
 const moment = require('moment');
 const path = require('path');
 const db = new Database('database/systems.db');
@@ -48,7 +47,6 @@ var msgStats = ['1', '5', '10', '15', '30', '60',
 					'120', '180', '240', '300', '360',
 					'420', '480', '540', '600'];
 var lock = false;
-var timer = Date.now();
 
 const thanks = ['Garud',
 									'Lyrae Cursorius'];
@@ -59,20 +57,6 @@ console.log('EDDN Listener started');
 function config() {
 	sock.setsockopt(zmq.ZMQ_RCVHWM, 50);
 	eddnConnector();
-	setInterval(function () {
-		if ((Date.now() - timer) > 120000) {
-				request('http://hosting.zaonce.net/launcher-status/status.json', function(err, res, body) {
-					try {
-						if(JSON.parse(body).status == 2) {
-							console.log(`${moment().format()} EDDN DOWN`);
-						}
-					} catch(err) {
-						console.log(`Error parsing ${body}: ${err}`);
-					}
-				});
-			timer = Date.now();
-		}
-	});
 }
 
 function eddnConnector() {
@@ -89,7 +73,6 @@ function eddnConnector() {
 }
 
 function storeEntry(entry) {
-	timer = Date.now();
 	let parsed = null;
 	try {
 		parsed = JSON.parse(entry);
