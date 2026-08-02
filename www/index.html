@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Elite Dangerous BGS Tick Detector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        h1 {
+            color: #f39c12;
+            margin-bottom: 0.5rem;
+        }
+        .tick-time {
+            font-size: 2rem;
+            color: #3498db;
+            margin: 1rem 0;
+            font-family: monospace;
+        }
+        .info {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        a {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Elite Dangerous BGS Tick Detector</h1>
+        <p class="info">Last detected tick:</p>
+        <div class="tick-time" id="tick">Loading...</div>
+        <p class="info">
+            API: <a href="/api/tick">/api/tick</a> |
+            <a href="/api/ticks">/api/ticks</a>
+        </p>
+        <p class="info">Auto-refreshes every 60 seconds.</p>
+    </div>
+    <script>
+        // Fetch current tick on page load and poll every 60 seconds
+        async function fetchTick() {
+            try {
+                const resp = await fetch('/api/tick');
+                const tick = await resp.json();
+                const el = document.getElementById('tick');
+                if (tick && tick !== el.textContent) {
+                    el.textContent = tick;
+                }
+            } catch (e) {
+                document.getElementById('tick').textContent = 'Unavailable';
+            }
+        }
+        fetchTick();
+        setInterval(fetchTick, 60000);
+    </script>
+</body>
+</html>

@@ -1,3 +1,22 @@
-.??*.sw?
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+
+# Node (legacy, kept to avoid accidental commits)
 node_modules/
+
+# Data
 database/
+
+# Generated files from import script
+scripts/tick_history.sql
+scripts/api_tick.json
+scripts/api_ticks.json
+
+# Editor
+.??*.sw?
+*.swp
+.idea/
+.vscode/

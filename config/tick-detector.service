@@ -1,0 +1,46 @@
+[Unit]
+Description=Elite Dangerous BGS Tick Detector
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+
+ExecStart=/opt/venvs/tickdetector/bin/python3 /opt/tick-detector/tick_detector.py
+
+# Database configuration
+Environment=TICK_DB_HOST=localhost
+Environment=TICK_DB_PORT=3306
+Environment=TICK_DB_USER=tick_detector
+Environment=TICK_DB_PASS=CHANGEME
+Environment=TICK_DB_NAME=tick_detector
+
+# Paths
+Environment=TICK_WEB_ROOT=/var/www/tick.edcd.io
+Environment=TICK_EDDN_RELAY=tcp://eddn.edcd.io:9500
+
+# Detection tuning
+Environment=TICK_FRESHNESS=14400
+Environment=TICK_THRESHOLD=5
+Environment=TICK_DELTA=7500
+Environment=TICK_DETECT_INTERVAL=60
+
+# Restart behaviour
+Restart=always
+RestartSec=10
+
+# Resource limits to prevent runaway memory
+MemoryMax=256M
+MemoryHigh=192M
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/www/tick.edcd.io
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

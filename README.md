@@ -3,7 +3,26 @@
 Originally by [Phelbore](https://github.com/phelbore), cloned from
 [Phelbore's original repo](https://github.com/phelbore/TickDetector/).
 
-## Running this project
+## Deployment Options
+
+There are two implementations of the tick detector available:
+
+| Version | Description | Docs |
+|---------|-------------|------|
+| **Node.js** (original - no longer maintained) | Three-component service using SQLite, WebSocket, and Docker | This file (below) |
+| **Python** (recommended - currently maintained) | Single-process service using MySQL/MariaDB, Apache CGI, and systemd | [docs/server-setup.md](docs/server-setup.md) |
+
+The Python version is a single-process rewrite that handles EDDN listening,
+tick detection, and static file publishing in one service. It uses MySQL (or
+RDS) instead of SQLite and is deployed via GitHub Actions to a systemd-managed
+service behind Apache. The HTTP API (`/api/tick` and `/api/ticks`) is
+fully compatible with the original.
+
+If you are deploying fresh, the Python version is recommended. Any changes that have been made since the shift to Brighter Applications hosting, are in the python version only, they are not being ported back to the node version. The node version uses docker, node and sqlite, running several different services. The python version uses python (via cgi) in a single service and mysql.
+
+---
+
+## Running the Node.js version
 This is a [NodeJS](https://nodejs.org/) project, so you'll need a version
 of `node` installed.  `npm` is also required.
 
@@ -125,7 +144,7 @@ See [Wikipedia:WebSocket#Protocol handshake](https://en.wikipedia.org/wiki/WebSo
 for further details.
 
 Whatever library/module you use to invoke the WebSocket connection
-*should* be happy if you just tell it to connect to the 
+*should* be happy if you just tell it to connect to the
 main HTTP(S) URL.
 
 
